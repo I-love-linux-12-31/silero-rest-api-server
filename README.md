@@ -69,7 +69,7 @@ From repository:
 ```bash
 podman run -d --name silero-rest-api-server-container -p 5500:5500 -e SILERO_LICENCE=ACCEPTED yaroslavk1231/silero-rest-api-server
 ```
-### API KEY
+API KEY
 ```bash
 podman logs silero-rest-api-server-container | grep "API KEY"
 ```
