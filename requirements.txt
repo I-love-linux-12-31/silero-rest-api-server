@@ -1,0 +1,9 @@
+requests
+pydub
+fastapi
+torch
+torchvision
+torchaudio
+python-multipart
+uvicorn
+swagger-ui-py

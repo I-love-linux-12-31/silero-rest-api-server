@@ -1,0 +1,9 @@
+{
+  "max_char_length": 600,
+  "sample_rate": 48000,
+  "threads_limit": 6,
+  "min_model_version": 3,
+
+  "offline_mode": false,
+  "update_voices": true
+}

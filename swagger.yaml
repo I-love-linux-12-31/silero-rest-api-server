@@ -1,0 +1,157 @@
+openapi: "3.0.0"
+info:
+  title: 'Silero TTS rest api server'
+  version: '2.1'
+  description: 'Silero TTS rest api server compatible with OpenTTS API'
+schemes:
+  - http
+servers:
+  - url: http://127.0.0.1:5500
+    description: Local server on port 5500
+  - url: http://127.0.0.1:8000
+    description: Local server on port 8000
+paths:
+  /api/tts:
+    get:
+      summary: 'Speak text to WAV'
+      parameters:
+        - in: query
+          name: voice
+          required: true
+          description: 'Voice in the form "model:voice" or tts:voice#speaker_id'
+          schema:
+            type: string
+            example: 'v3_en:en_64'
+        - in: query
+          name: text
+          required: true
+          description: 'Text to speak'
+          schema:
+            type: string
+            example: 'Welcome to the world of speech synthesis!'
+        - in: query
+          name: vocoder
+          description: 'Vocoder quality - not used (For OpenTTS API compatibility)'
+          schema:
+            type: string
+            enum: [high, medium, low]
+            example: 'high'
+        - in: query
+          name: denoiserStrength
+          description: 'Strength of vocoder denoiser - not used (0-1, 0 is disabled, For OpenTTS API compatibility)'
+          schema:
+            type: number
+            example: 0.03
+        - in: query
+          name: cache
+          description: 'Use WAV cache if enabled (--cache, default: true) - not implemented yet'
+          schema:
+            type: boolean
+            example: false
+      produces:
+        - audio/wav
+      responses:
+        '200':
+          description: audio
+          schema:
+            type: binary
+  /api/voices:
+    get:
+      summary: 'Get available voices'
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: language
+          description: 'Filter based on language(s)'
+          schema:
+            type: string
+            example: 'en'
+        - in: query
+          name: locale
+          description: 'Filter based on locale(s)'
+          schema:
+            type: string
+            example: 'en-indic'
+        - in: query
+          name: gender
+          description: 'Filter based on gender(s)'
+          schema:
+            type: string
+            enum: [M, F, '?']
+            example: ''
+        - in: query
+          name: tts_name
+          description: 'Filter based on TTS system name(s). Not implemented for other models.'
+          schema:
+            type: string
+            enum: [ "silero", ""]
+            example: ""
+      responses:
+        '200':
+          description: voices
+          schema:
+            type: object
+  /api/languages:
+    get:
+      summary: 'Get available languages'
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: tts_name
+          description: 'Filter based on TTS system name(s). Not implemented for other models.'
+          schema:
+            type: string
+            enum: [ "silero", ""]
+            example: ""
+      responses:
+        '200':
+          description: languages
+          schema:
+            type: list
+  /upload_model/:
+    post:
+      summary: Upload custom model file to server
+      security:
+        - ApiKeyAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '202':
+          description: Accepted
+        '403':
+          description: Forbidden - Invalid API key
+  /remove_file_cache/:
+    delete:
+      summary: Remove old file cache for sessions
+      security:
+        - ApiKeyAuth: [ ]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  folders_deleted:
+                    type: integer
+                  files_deleted:
+                    type: integer
+        '403':
+          description: Forbidden - Invalid API key
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: api_key
