@@ -56,70 +56,70 @@ To use Silero models you need to accept Silero's [license](https://github.com/sn
 ## Running in container
 
 ### Building image:
-'''bash
+```bash
 podman build -t silero-rest-api-server:latest .
-'''
+```
 
 ### Container setup
 From local image:
-'''bash
+```bash
 podman run -d --name silero-rest-api-server-container -p 5500:5500 -e SILERO_LICENCE=ACCEPTED silero-rest-api-server
-'''
+```
 From repository:
-'''bash
+```bash
 podman run -d --name silero-rest-api-server-container -p 5500:5500 -e SILERO_LICENCE=ACCEPTED yaroslavk1231/silero-rest-api-server
-'''
+```
 ### API KEY
-'''bash
+```bash
 podman logs silero-rest-api-server-container | grep "API KEY"
-'''
+```
 
 ## How to run
 
 ### To setup
-'''bash
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip3 install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 pip3 install --no-cache-dir -r requirements.txt
-'''
+```
 
 ### To run
-'''bash
+```bash
 source venv/bin/activate
 SILERO_LICENCE="ACCEPTED" uvicorn main:app --host 0.0.0.0 --port 5500
-'''
+```
 
 ### Usage examples
 ####  Getting speakers list example
-'''bash
+```bash
 curl -X 'GET' \
   'http://127.0.0.1:5500/api/voices?language=en&locale=en-indic' \
   -H 'accept: */*'
-'''
+```
 
 #### Getting languages list example
-'''bash
+```bash
 curl -X 'GET' \
   'http://127.0.0.1:5500/api/languages' \
   -H 'accept: */*'
-'''
+```
 
 #### Example of speach generation.
-'''bash
+```bash
 curl -X 'GET' 'http://127.0.0.1:5500/api/tts?voice=v3_en%3Aen_64&text=Hello%20World%21' -H 'accept: */*' --output test.wav
-'''
+```
 Out: Audio file "test.wav"
 
 #### Model uploading example.
-'''bash
+```bash
 curl -X POST "http://localhost:5500/upload_model/" -H "Content-Type: multipart/form-data" -H "api_key:<YOUR API KEY>" -F "file=@v3_en.pt"
-'''
+```
 
 
 ### Config files:
 #### config.json
-'''json
+```json
 {
   "max_char_length": 600,  # Maximum size of text block. If text is larger than this value, it will be divided to blocks.
   "sample_rate": 48000,  # Sampling rate: 48000 or 24000 or 8000
@@ -129,15 +129,15 @@ curl -X POST "http://localhost:5500/upload_model/" -H "Content-Type: multipart/f
   "offline_mode": false,  # Prohibit server to download new models from models.silero.ai/models/tts
   "update_voices": true  # Save list of local speakers to speakers.json
 }
-'''
+```
 #### langs.json
 List of official SileroTTS models. Can be updated automatically.  
-'''json
+```json
 {
     "model_name.pt": "download_url",
     ...
 }
-'''
+```
 
 ### Project structure
 * main.py - api server and main functions
@@ -146,5 +146,7 @@ List of official SileroTTS models. Can be updated automatically.
 * tts.py - function for work with models and pytorch
 
 ## Used Projects
+
 This project incorporates some code from the [silero-api-server](https://github.com/ouoertheo/silero-api-server)(MIT).
+
 This app downloads add runs [Silero TTS models](https://github.com/snakers4/silero-models) provided by CC-BY-NC(or other) license.
